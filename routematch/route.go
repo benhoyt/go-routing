@@ -20,7 +20,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		h = get(home)
 	case match(p, "/contact"):
 		h = get(contact)
-	case match(p, "/api/widgets") && isGet(r):
+	case match(p, "/api/widgets") && r.Method == "GET":
 		h = get(apiGetWidgets)
 	case match(p, "/api/widgets"):
 		h = post(apiCreateWidget)
@@ -76,10 +76,6 @@ func match(path, pattern string, vars ...interface{}) bool {
 		}
 	}
 	return true
-}
-
-func isGet(r *http.Request) bool {
-	return r.Method == http.MethodGet || r.Method == http.MethodHead
 }
 
 func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {

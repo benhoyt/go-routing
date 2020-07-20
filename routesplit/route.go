@@ -25,7 +25,7 @@ func RouteNested(w http.ResponseWriter, r *http.Request) {
 	case n >= 2 && p[0] == "api" && p[1] == "widgets":
 		// /api/widgets/*
 		switch {
-		case n == 2 && isGet(r):
+		case n == 2 && r.Method == "GET":
 			h = get(apiGetWidgets)
 		case n == 2:
 			h = post(apiCreateWidget)
@@ -82,7 +82,7 @@ func RouteFlat(w http.ResponseWriter, r *http.Request) {
 		h = get(home)
 	case n == 1 && p[0] == "contact":
 		h = get(contact)
-	case n == 2 && p[0] == "api" && p[1] == "widgets" && isGet(r):
+	case n == 2 && p[0] == "api" && p[1] == "widgets" && r.Method == "GET":
 		h = get(apiGetWidgets)
 	case n == 2 && p[0] == "api" && p[1] == "widgets":
 		h = post(apiCreateWidget)
@@ -105,10 +105,6 @@ func RouteFlat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.ServeHTTP(w, r)
-}
-
-func isGet(r *http.Request) bool {
-	return r.Method == http.MethodGet || r.Method == http.MethodHead
 }
 
 func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
