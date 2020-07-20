@@ -29,7 +29,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 			h = get(apiGetWidgets)
 		case n == 2:
 			h = post(apiCreateWidget)
-		case n >= 3:
+		case n >= 3 && p[2] != "":
 			// /api/widgets/:slug/*
 			slug := p[2]
 			var id int
@@ -82,7 +82,7 @@ func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
 			}
 		}
 		w.Header().Set("Allow", strings.Join(methods, ", "))
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 

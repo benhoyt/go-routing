@@ -57,6 +57,9 @@ func match(path, pattern string, vars ...interface{}) bool {
 		case "%s":
 			p := vars[0].(*string)
 			vars = vars[1:]
+			if pathPart == "" {
+				return false
+			}
 			*p = pathPart
 		case "%d":
 			p := vars[0].(*int)
@@ -88,7 +91,7 @@ func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
 			}
 		}
 		w.Header().Set("Allow", strings.Join(methods, ", "))
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
