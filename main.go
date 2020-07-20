@@ -36,6 +36,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/benhoyt/go-routing/routechi"
 	"github.com/benhoyt/go-routing/routegorilla"
 	"github.com/benhoyt/go-routing/routematch"
 	"github.com/benhoyt/go-routing/routeregex"
@@ -59,6 +60,7 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
+	"chi":          routechi.Route,
 	"gorilla":      routegorilla.Route,
 	"match":        http.HandlerFunc(routematch.Route),
 	"regex":        http.HandlerFunc(routeregex.Route),

@@ -43,11 +43,13 @@ func TestRouters(t *testing.T) {
 
 		{"POST", "/api/widgets/foo/parts/1/update", 200, "apiUpdateWidgetPart foo 1\n"},
 		{"POST", "/api/widgets/foo/parts/42/update", 200, "apiUpdateWidgetPart foo 42\n"},
+		{"POST", "/api/widgets/foo/parts/bar/update", 404, ""},
 		{"POST", "/api/widgets/bar-baz/parts/99/update", 200, "apiUpdateWidgetPart bar-baz 99\n"},
 		{"GET", "/api/widgets/foo/parts/1/update", 405, ""},
 
 		{"POST", "/api/widgets/foo/parts/1/delete", 200, "apiDeleteWidgetPart foo 1\n"},
 		{"POST", "/api/widgets/foo/parts/42/delete", 200, "apiDeleteWidgetPart foo 42\n"},
+		{"POST", "/api/widgets/foo/parts/bar/delete", 404, ""},
 		{"POST", "/api/widgets/bar-baz/parts/99/delete", 200, "apiDeleteWidgetPart bar-baz 99\n"},
 		{"GET", "/api/widgets/foo/parts/1/delete", 405, ""},
 
