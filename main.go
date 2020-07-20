@@ -39,6 +39,7 @@ import (
 	"github.com/benhoyt/go-routing/routechi"
 	"github.com/benhoyt/go-routing/routegorilla"
 	"github.com/benhoyt/go-routing/routematch"
+	"github.com/benhoyt/go-routing/routepat"
 	"github.com/benhoyt/go-routing/routeregex"
 	"github.com/benhoyt/go-routing/routesplit"
 )
@@ -63,6 +64,7 @@ var routers = map[string]http.Handler{
 	"chi":          routechi.Route,
 	"gorilla":      routegorilla.Route,
 	"match":        http.HandlerFunc(routematch.Route),
+	"pat":          routepat.Route,
 	"regex":        http.HandlerFunc(routeregex.Route),
 	"split-flat":   http.HandlerFunc(routesplit.RouteFlat),
 	"split-nested": http.HandlerFunc(routesplit.RouteNested),
