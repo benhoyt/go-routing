@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func RouteNested(w http.ResponseWriter, r *http.Request) {
 	// Split path into slash-separated parts, for example, path "/foo/bar"
 	// gives p==["foo", "bar"] and path "/" gives p==[""].
 	p := strings.Split(r.URL.Path, "/")[1:]
@@ -63,6 +63,44 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if h == nil {
+		http.NotFound(w, r)
+		return
+	}
+	h.ServeHTTP(w, r)
+}
+
+func RouteFlat(w http.ResponseWriter, r *http.Request) {
+	// Split path into slash-separated parts, for example, path "/foo/bar"
+	// gives p==["foo", "bar"] and path "/" gives p==[""].
+	p := strings.Split(r.URL.Path, "/")[1:]
+	n := len(p)
+
+	var h http.Handler
+	var id int
+	switch {
+	case n == 1 && p[0] == "":
+		h = get(home)
+	case n == 1 && p[0] == "contact":
+		h = get(contact)
+	case n == 2 && p[0] == "api" && p[1] == "widgets" && isGet(r):
+		h = get(apiGetWidgets)
+	case n == 2 && p[0] == "api" && p[1] == "widgets":
+		h = post(apiCreateWidget)
+	case n == 3 && p[0] == "api" && p[1] == "widgets" && p[2] != "":
+		h = post(apiWidget{p[2]}.update)
+	case n == 4 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts":
+		h = post(apiWidget{p[2]}.createPart)
+	case n == 6 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts" && isId(p[4], &id) && p[5] == "update":
+		h = post(apiWidgetPart{p[2], id}.update)
+	case n == 6 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts" && isId(p[4], &id) && p[5] == "delete":
+		h = post(apiWidgetPart{p[2], id}.delete)
+	case n == 1:
+		h = get(widget{p[0]}.widget)
+	case n == 2 && p[1] == "admin":
+		h = get(widget{p[0]}.admin)
+	case n == 2 && p[1] == "image":
+		h = post(widget{p[0]}.image)
+	default:
 		http.NotFound(w, r)
 		return
 	}

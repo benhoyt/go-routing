@@ -37,6 +37,7 @@ import (
 	"strings"
 
 	"github.com/benhoyt/go-routing/routematch"
+	"github.com/benhoyt/go-routing/routeregex"
 	"github.com/benhoyt/go-routing/routesplit"
 )
 
@@ -57,8 +58,10 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
-	"match": http.HandlerFunc(routematch.Route),
-	"split": http.HandlerFunc(routesplit.Route),
+	"match":        http.HandlerFunc(routematch.Route),
+	"regex":        http.HandlerFunc(routeregex.Route),
+	"split-flat":   http.HandlerFunc(routesplit.RouteFlat),
+	"split-nested": http.HandlerFunc(routesplit.RouteNested),
 }
 
 var routerNames = func() []string {
