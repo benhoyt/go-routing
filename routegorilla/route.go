@@ -30,15 +30,6 @@ func init() {
 	Route = r
 }
 
-func isId(s string, p *int) bool {
-	id, err := strconv.Atoi(s)
-	if err != nil || id <= 0 {
-		return false
-	}
-	*p = id
-	return true
-}
-
 func home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "home\n")
 }
