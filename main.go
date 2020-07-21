@@ -1,30 +1,20 @@
 // Test various ways to do HTTP method+path routing in Go
 
-/*
+// Each router handles the 11 URLs below:
+//
+// GET  /										# home
+// GET  /contact								# contact
+// GET  /api/widgets							# apiGetWidgets
+// POST /api/widgets                           	# apiCreateWidget
+// POST /api/widgets/:slug                     	# apiUpdateWidget
+// POST /api/widgets/:slug/parts               	# apiCreateWidgetPart
+// POST /api/widgets/:slug/parts/:id/update    	# apiUpdateWidgetPart
+// POST /api/widgets/:slug/parts/:id/delete    	# apiDeleteWidgetPart
+// GET  /:slug									# widget
+// GET  /:slug/admin                         	# widgetAdmin
+// POST /:slug/image							# widgetImage
 
-Implement the URLs below
-
-1) switch or if-else based router with plain ServeMux
-1a) switch with match() function?
-2) custom tiny regexp router (like Gifty)
-3) Axel Wagner's approach
-4) one or two popular Go routers: chi and something else, maybe https://github.com/bmizerany/pat or gorilla/mux
-
-GET  /										# home
-GET  /contact								# contact
-
-GET  /api/widgets							# apiGetWidgets
-POST /api/widgets                           # apiCreateWidget
-POST /api/widgets/:slug                     # apiUpdateWidget
-POST /api/widgets/:slug/parts               # apiCreateWidgetPart
-POST /api/widgets/:slug/parts/:id/update    # apiUpdateWidgetPart
-POST /api/widgets/:slug/parts/:id/delete    # apiDeleteWidgetPart
-
-GET  /:slug									# widget
-GET  /:slug/admin                           # widgetAdmin
-POST /:slug/image							# widgetImage
-
-*/
+// TODO: Axel Wagner's version
 
 package main
 
@@ -40,7 +30,8 @@ import (
 	"github.com/benhoyt/go-routing/routegorilla"
 	"github.com/benhoyt/go-routing/routematch"
 	"github.com/benhoyt/go-routing/routepat"
-	"github.com/benhoyt/go-routing/routeregex"
+	"github.com/benhoyt/go-routing/routeregexswitch"
+	"github.com/benhoyt/go-routing/routeregextable"
 	"github.com/benhoyt/go-routing/routesplit"
 )
 
@@ -65,7 +56,8 @@ var routers = map[string]http.Handler{
 	"gorilla":      routegorilla.Route,
 	"match":        http.HandlerFunc(routematch.Route),
 	"pat":          routepat.Route,
-	"regex":        http.HandlerFunc(routeregex.Route),
+	"regex-switch": http.HandlerFunc(routeregexswitch.Route),
+	"regex-table":  http.HandlerFunc(routeregextable.Route),
 	"split-flat":   http.HandlerFunc(routesplit.RouteFlat),
 	"split-nested": http.HandlerFunc(routesplit.RouteNested),
 }
