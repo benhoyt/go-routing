@@ -95,3 +95,38 @@ func TestRouters(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkRouters(b *testing.B) {
+	tests := []struct {
+		method string
+		path   string
+		status int
+	}{
+		{"GET", "/", 200},
+		{"GET", "/api/widgets", 200},
+		{"POST", "/api/widgets/foo", 200},
+		{"POST", "/api/widgets/foo/parts/1/update", 200},
+		{"GET", "/foo", 200},
+	}
+	for _, name := range routerNames {
+		router := routers[name]
+		b.Run(name, func(b *testing.B) {
+			for _, test := range tests {
+				path := strings.ReplaceAll(test.path, "/", "_")
+				b.Run(test.method+path, func(b *testing.B) {
+					for i := 0; i < b.N; i++ {
+						recorder := httptest.NewRecorder()
+						request, err := http.NewRequest(test.method, test.path, &bytes.Buffer{})
+						if err != nil {
+							b.Fatal(err)
+						}
+						router.ServeHTTP(recorder, request)
+						if recorder.Code != test.status {
+							b.Fatalf("expected status %d, got %d", test.status, recorder.Code)
+						}
+					}
+				})
+			}
+		})
+	}
+}
