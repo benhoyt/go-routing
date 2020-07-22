@@ -14,8 +14,6 @@
 // GET  /:slug/admin                         	# widgetAdmin
 // POST /:slug/image							# widgetImage
 
-// TODO: Axel Wagner's version
-
 package main
 
 import (
@@ -33,6 +31,7 @@ import (
 	"github.com/benhoyt/go-routing/routeregexswitch"
 	"github.com/benhoyt/go-routing/routeregextable"
 	"github.com/benhoyt/go-routing/routesplit"
+	"github.com/benhoyt/go-routing/routewagner"
 )
 
 const port = 8080
@@ -60,6 +59,7 @@ var routers = map[string]http.Handler{
 	"regex-table":  http.HandlerFunc(routeregextable.Route),
 	"split-flat":   http.HandlerFunc(routesplit.RouteFlat),
 	"split-nested": http.HandlerFunc(routesplit.RouteNested),
+	"wagner":       http.HandlerFunc(routewagner.Route),
 }
 
 var routerNames = func() []string {

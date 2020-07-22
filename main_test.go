@@ -40,6 +40,7 @@ func TestRouters(t *testing.T) {
 		{"POST", "/api/widgets/bar-baz/parts", 200, "apiCreateWidgetPart bar-baz\n"},
 		{"POST", "/api/widgets/foo/parts/", 404, ""},
 		{"GET", "/api/widgets/foo/parts", 405, ""},
+		{"POST", "/api/widgets/foo/zarts", 404, ""},
 
 		{"POST", "/api/widgets/foo/parts/1/update", 200, "apiUpdateWidgetPart foo 1\n"},
 		{"POST", "/api/widgets/foo/parts/42/update", 200, "apiUpdateWidgetPart foo 42\n"},
@@ -52,6 +53,7 @@ func TestRouters(t *testing.T) {
 		{"POST", "/api/widgets/foo/parts/bar/delete", 404, ""},
 		{"POST", "/api/widgets/bar-baz/parts/99/delete", 200, "apiDeleteWidgetPart bar-baz 99\n"},
 		{"GET", "/api/widgets/foo/parts/1/delete", 405, ""},
+		{"POST", "/api/widgets/foo/parts/1/no", 404, ""},
 
 		{"GET", "/foo", 200, "widget foo\n"},
 		{"GET", "/bar-baz", 200, "widget bar-baz\n"},
@@ -68,6 +70,7 @@ func TestRouters(t *testing.T) {
 		{"POST", "/bar-baz/image", 200, "widgetImage bar-baz\n"},
 		{"POST", "/foo/image/", 404, ""},
 		{"GET", "/foo/image", 405, ""},
+		{"GET", "/foo/no", 404, ""},
 	}
 	for _, name := range routerNames {
 		router := routers[name]
