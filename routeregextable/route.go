@@ -1,5 +1,22 @@
 // Go HTTP router based on a table of regexes
 
+// An alterative to passing the fields via context is making each
+// route.handler a "func(fields []string) http.HandleFunc", and then
+// calling it in Route() as follows:
+//
+//     handler := route.handler(matches[1:])
+//     handler(w, r)
+//
+// Then each handler would look like this:
+//
+//     func apiUpdateWidgetPart(fields []string) http.HandlerFunc {
+// 	       return func(w http.ResponseWriter, r *http.Request) {
+//             slug := fields[0]
+//             id, _ := strconv.Atoi(fields[1])
+//             fmt.Fprintf(w, "apiUpdateWidgetPart %s %d\n", slug, id)
+//         }
+//     }
+
 package routeregextable
 
 import (
