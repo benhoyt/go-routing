@@ -51,9 +51,6 @@ func match(path, pattern string, vars ...interface{}) bool {
 		case '+':
 			// '+' matches till next slash in path
 			slash := strings.IndexByte(path, '/')
-			if slash == 0 {
-				return false // '+' must match at least 1 byte
-			}
 			if slash < 0 {
 				slash = len(path)
 			}
