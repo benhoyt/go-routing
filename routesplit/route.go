@@ -1,4 +1,4 @@
-// Go HTTP router based on strings.Split() with multi-level switch
+// Go HTTP router based on strings.Split() with a switch statement
 
 package routesplit
 
@@ -9,67 +9,7 @@ import (
 	"strings"
 )
 
-func RouteNested(w http.ResponseWriter, r *http.Request) {
-	// Split path into slash-separated parts, for example, path "/foo/bar"
-	// gives p==["foo", "bar"] and path "/" gives p==[""].
-	p := strings.Split(r.URL.Path, "/")[1:]
-	n := len(p)
-
-	var h http.Handler
-	switch {
-	case n == 1 && p[0] == "":
-		h = get(home)
-	case n == 1 && p[0] == "contact":
-		h = get(contact)
-
-	case n >= 2 && p[0] == "api" && p[1] == "widgets":
-		// /api/widgets/*
-		switch {
-		case n == 2 && r.Method == "GET":
-			h = get(apiGetWidgets)
-		case n == 2:
-			h = post(apiCreateWidget)
-		case n >= 3 && p[2] != "":
-			// /api/widgets/:slug/*
-			slug := p[2]
-			var id int
-			switch {
-			case n == 3:
-				h = post(apiWidget{slug}.update)
-			case n == 4 && p[3] == "parts":
-				h = post(apiWidget{slug}.createPart)
-			case n == 6 && isId(p[4], &id):
-				// /api/widgets/:slug/parts/:id/*
-				switch {
-				case p[5] == "update":
-					h = post(apiWidgetPart{slug, id}.update)
-				case p[5] == "delete":
-					h = post(apiWidgetPart{slug, id}.delete)
-				}
-			}
-		}
-
-	case n >= 1:
-		// /:slug/*
-		slug := p[0]
-		switch {
-		case n == 1:
-			h = get(widget{slug}.widget)
-		case n == 2 && p[1] == "admin":
-			h = get(widget{slug}.admin)
-		case n == 2 && p[1] == "image":
-			h = post(widget{slug}.image)
-		}
-	}
-
-	if h == nil {
-		http.NotFound(w, r)
-		return
-	}
-	h.ServeHTTP(w, r)
-}
-
-func RouteFlat(w http.ResponseWriter, r *http.Request) {
+func Route(w http.ResponseWriter, r *http.Request) {
 	// Split path into slash-separated parts, for example, path "/foo/bar"
 	// gives p==["foo", "bar"] and path "/" gives p==[""].
 	p := strings.Split(r.URL.Path, "/")[1:]

@@ -17,7 +17,7 @@
 //         }
 //     }
 
-package routeregextable
+package routeretable
 
 import (
 	"context"

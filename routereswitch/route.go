@@ -1,6 +1,6 @@
 // Go HTTP router based on a regexp matching function and "switch"
 
-package routeregexswitch
+package routereswitch
 
 import (
 	"fmt"

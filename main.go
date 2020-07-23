@@ -28,8 +28,8 @@ import (
 	"github.com/benhoyt/go-routing/routegorilla"
 	"github.com/benhoyt/go-routing/routematch"
 	"github.com/benhoyt/go-routing/routepat"
-	"github.com/benhoyt/go-routing/routeregexswitch"
-	"github.com/benhoyt/go-routing/routeregextable"
+	"github.com/benhoyt/go-routing/routereswitch"
+	"github.com/benhoyt/go-routing/routeretable"
 	"github.com/benhoyt/go-routing/routesplit"
 	"github.com/benhoyt/go-routing/routewagner"
 )
@@ -51,15 +51,14 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
-	"chi":          routechi.Route,
-	"gorilla":      routegorilla.Route,
-	"match":        http.HandlerFunc(routematch.Route),
-	"pat":          routepat.Route,
-	"regex-switch": http.HandlerFunc(routeregexswitch.Route),
-	"regex-table":  http.HandlerFunc(routeregextable.Route),
-	"split-flat":   http.HandlerFunc(routesplit.RouteFlat),
-	"split-nested": http.HandlerFunc(routesplit.RouteNested),
-	"wagner":       http.HandlerFunc(routewagner.Route),
+	"chi":      routechi.Route,
+	"gorilla":  routegorilla.Route,
+	"match":    http.HandlerFunc(routematch.Route),
+	"pat":      routepat.Route,
+	"reswitch": http.HandlerFunc(routereswitch.Route),
+	"retable":  http.HandlerFunc(routeretable.Route),
+	"split":    http.HandlerFunc(routesplit.Route),
+	"wagner":   http.HandlerFunc(routewagner.Route),
 }
 
 var routerNames = func() []string {
