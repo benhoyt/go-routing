@@ -45,9 +45,8 @@ func main() {
 	routerName := os.Args[1]
 	router := routers[routerName]
 
-	http.Handle("/", router)
 	fmt.Printf("listening on port %d using %s router\n", port, routerName)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
 }
 
 var routers = map[string]http.Handler{
