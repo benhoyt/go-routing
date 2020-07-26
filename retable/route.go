@@ -17,7 +17,7 @@
 //         }
 //     }
 
-package routeretable
+package retable
 
 import (
 	"context"

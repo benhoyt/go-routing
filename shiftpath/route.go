@@ -1,7 +1,7 @@
 // Routing based on Axel Wagner's ShiftPath approach:
 // https://blog.merovius.de/2017/06/18/how-not-to-use-an-http-router.html
 
-package routewagner
+package shiftpath
 
 import (
 	"fmt"

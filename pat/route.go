@@ -1,6 +1,6 @@
 // Routing based on the bmizerany/pat router
 
-package routepat
+package pat
 
 import (
 	"fmt"

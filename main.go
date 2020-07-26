@@ -24,14 +24,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/benhoyt/go-routing/routechi"
-	"github.com/benhoyt/go-routing/routegorilla"
-	"github.com/benhoyt/go-routing/routematch"
-	"github.com/benhoyt/go-routing/routepat"
-	"github.com/benhoyt/go-routing/routereswitch"
-	"github.com/benhoyt/go-routing/routeretable"
-	"github.com/benhoyt/go-routing/routesplit"
-	"github.com/benhoyt/go-routing/routewagner"
+	"github.com/benhoyt/go-routing/chi"
+	"github.com/benhoyt/go-routing/gorilla"
+	"github.com/benhoyt/go-routing/match"
+	"github.com/benhoyt/go-routing/pat"
+	"github.com/benhoyt/go-routing/reswitch"
+	"github.com/benhoyt/go-routing/retable"
+	"github.com/benhoyt/go-routing/shiftpath"
+	"github.com/benhoyt/go-routing/split"
 )
 
 const port = 8080
@@ -50,14 +50,14 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
-	"chi":      routechi.Route,
-	"gorilla":  routegorilla.Route,
-	"match":    http.HandlerFunc(routematch.Route),
-	"pat":      routepat.Route,
-	"reswitch": http.HandlerFunc(routereswitch.Route),
-	"retable":  http.HandlerFunc(routeretable.Route),
-	"split":    http.HandlerFunc(routesplit.Route),
-	"wagner":   http.HandlerFunc(routewagner.Route),
+	"chi":       chi.Route,
+	"gorilla":   gorilla.Route,
+	"match":     http.HandlerFunc(match.Route),
+	"pat":       pat.Route,
+	"reswitch":  http.HandlerFunc(reswitch.Route),
+	"retable":   http.HandlerFunc(retable.Route),
+	"shiftpath": http.HandlerFunc(shiftpath.Route),
+	"split":     http.HandlerFunc(split.Route),
 }
 
 var routerNames = func() []string {

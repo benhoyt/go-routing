@@ -1,6 +1,6 @@
-// Go HTTP router based on strings.Split() with a switch statement
+// Go HTTP router based on a simple custom match() function
 
-package routesplit
+package match
 
 import (
 	"fmt"
@@ -10,41 +10,73 @@ import (
 )
 
 func Route(w http.ResponseWriter, r *http.Request) {
-	// Split path into slash-separated parts, for example, path "/foo/bar"
-	// gives p==["foo", "bar"] and path "/" gives p==[""].
-	p := strings.Split(r.URL.Path, "/")[1:]
-	n := len(p)
-
 	var h http.Handler
+	var slug string
 	var id int
+
+	p := r.URL.Path
 	switch {
-	case n == 1 && p[0] == "":
+	case match(p, "/"):
 		h = get(home)
-	case n == 1 && p[0] == "contact":
+	case match(p, "/contact"):
 		h = get(contact)
-	case n == 2 && p[0] == "api" && p[1] == "widgets" && r.Method == "GET":
+	case match(p, "/api/widgets") && r.Method == "GET":
 		h = get(apiGetWidgets)
-	case n == 2 && p[0] == "api" && p[1] == "widgets":
+	case match(p, "/api/widgets"):
 		h = post(apiCreateWidget)
-	case n == 3 && p[0] == "api" && p[1] == "widgets" && p[2] != "":
-		h = post(apiWidget{p[2]}.update)
-	case n == 4 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts":
-		h = post(apiWidget{p[2]}.createPart)
-	case n == 6 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts" && isId(p[4], &id) && p[5] == "update":
-		h = post(apiWidgetPart{p[2], id}.update)
-	case n == 6 && p[0] == "api" && p[1] == "widgets" && p[2] != "" && p[3] == "parts" && isId(p[4], &id) && p[5] == "delete":
-		h = post(apiWidgetPart{p[2], id}.delete)
-	case n == 1:
-		h = get(widget{p[0]}.widget)
-	case n == 2 && p[1] == "admin":
-		h = get(widget{p[0]}.admin)
-	case n == 2 && p[1] == "image":
-		h = post(widget{p[0]}.image)
+	case match(p, "/api/widgets/+", &slug):
+		h = post(apiWidget{slug}.update)
+	case match(p, "/api/widgets/+/parts", &slug):
+		h = post(apiWidget{slug}.createPart)
+	case match(p, "/api/widgets/+/parts/+/update", &slug, &id):
+		h = post(apiWidgetPart{slug, id}.update)
+	case match(p, "/api/widgets/+/parts/+/delete", &slug, &id):
+		h = post(apiWidgetPart{slug, id}.delete)
+	case match(p, "/+", &slug):
+		h = get(widget{slug}.widget)
+	case match(p, "/+/admin", &slug):
+		h = get(widget{slug}.admin)
+	case match(p, "/+/image", &slug):
+		h = post(widget{slug}.image)
 	default:
 		http.NotFound(w, r)
 		return
 	}
 	h.ServeHTTP(w, r)
+}
+
+func match(path, pattern string, vars ...interface{}) bool {
+	for ; pattern != "" && path != ""; pattern = pattern[1:] {
+		switch pattern[0] {
+		case '+':
+			// '+' matches till next slash in path
+			slash := strings.IndexByte(path, '/')
+			if slash < 0 {
+				slash = len(path)
+			}
+			segment := path[:slash]
+			path = path[slash:]
+			switch p := vars[0].(type) {
+			case *string:
+				*p = segment
+			case *int:
+				n, err := strconv.Atoi(segment)
+				if err != nil {
+					return false
+				}
+				*p = n
+			default:
+				panic("vars must be *string or *int")
+			}
+			vars = vars[1:]
+		case path[0]:
+			// non-'+' pattern byte must match path byte
+			path = path[1:]
+		default:
+			return false
+		}
+	}
+	return path == "" && pattern == ""
 }
 
 func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
@@ -66,15 +98,6 @@ func get(h http.HandlerFunc) http.HandlerFunc {
 
 func post(h http.HandlerFunc) http.HandlerFunc {
 	return allowMethod(h, http.MethodPost)
-}
-
-func isId(s string, p *int) bool {
-	id, err := strconv.Atoi(s)
-	if err != nil || id <= 0 {
-		return false
-	}
-	*p = id
-	return true
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
