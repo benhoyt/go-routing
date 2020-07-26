@@ -102,20 +102,42 @@ func TestRouters(t *testing.T) {
 func BenchmarkRouters(b *testing.B) {
 	method := "POST"
 	path := "/api/widgets/foo/parts/1/update"
-	for _, name := range routerNames {
+
+	// Could use httptest.ResponseRecorder, but that's slow-ish
+	responseWriter := &noopResponseWriter{}
+
+	names := make([]string, len(routerNames))
+	copy(names, routerNames)
+	names = append(names, "noop")
+
+	for _, name := range names {
 		router := routers[name]
+		if router == nil {
+			router = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte("noop\n"))
+			})
+		}
 		b.Run(name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				recorder := httptest.NewRecorder()
 				request, err := http.NewRequest(method, path, &bytes.Buffer{})
 				if err != nil {
 					b.Fatal(err)
 				}
-				router.ServeHTTP(recorder, request)
-				if recorder.Code != 200 {
-					b.Fatalf("expected status 200, got %d", recorder.Code)
-				}
+				router.ServeHTTP(responseWriter, request)
 			}
 		})
 	}
+}
+
+type noopResponseWriter struct{}
+
+func (r *noopResponseWriter) Header() http.Header {
+	return nil
+}
+
+func (r *noopResponseWriter) Write(b []byte) (int, error) {
+	return len(b), nil
+}
+
+func (r *noopResponseWriter) WriteHeader(statusCode int) {
 }
