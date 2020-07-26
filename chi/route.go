@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-var Route http.Handler
+var Serve http.Handler
 
 func init() {
 	r := chi.NewRouter()
@@ -27,7 +27,7 @@ func init() {
 	r.Get("/{slug}/admin", widgetAdmin)
 	r.Post("/{slug}/image", widgetImage)
 
-	Route = r
+	Serve = r
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

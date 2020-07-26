@@ -10,7 +10,7 @@ import (
 	"github.com/bmizerany/pat"
 )
 
-var Route http.Handler
+var Serve http.Handler
 
 func init() {
 	r := pat.New()
@@ -27,7 +27,7 @@ func init() {
 	r.Get("/:slug/admin", http.HandlerFunc(widgetAdmin))
 	r.Post("/:slug/image", http.HandlerFunc(widgetImage))
 
-	Route = r
+	Serve = r
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

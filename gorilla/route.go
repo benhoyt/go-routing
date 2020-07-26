@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var Route http.Handler
+var Serve http.Handler
 
 func init() {
 	r := mux.NewRouter()
@@ -27,7 +27,7 @@ func init() {
 	r.HandleFunc("/{slug}/admin", widgetAdmin).Methods("GET")
 	r.HandleFunc("/{slug}/image", widgetImage).Methods("POST")
 
-	Route = r
+	Serve = r
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

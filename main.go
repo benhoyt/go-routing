@@ -50,14 +50,14 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
-	"chi":       chi.Route,
-	"gorilla":   gorilla.Route,
-	"match":     http.HandlerFunc(match.Route),
-	"pat":       pat.Route,
-	"reswitch":  http.HandlerFunc(reswitch.Route),
-	"retable":   http.HandlerFunc(retable.Route),
-	"shiftpath": http.HandlerFunc(shiftpath.Route),
-	"split":     http.HandlerFunc(split.Route),
+	"chi":       chi.Serve,
+	"gorilla":   gorilla.Serve,
+	"match":     http.HandlerFunc(match.Serve),
+	"pat":       pat.Serve,
+	"reswitch":  http.HandlerFunc(reswitch.Serve),
+	"retable":   http.HandlerFunc(retable.Serve),
+	"shiftpath": http.HandlerFunc(shiftpath.Serve),
+	"split":     http.HandlerFunc(split.Serve),
 }
 
 var routerNames = func() []string {

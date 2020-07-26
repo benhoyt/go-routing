@@ -11,7 +11,7 @@ import (
 	"sync"
 )
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func Serve(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
 	var slug string
 	var id int

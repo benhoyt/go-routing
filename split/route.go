@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func Serve(w http.ResponseWriter, r *http.Request) {
 	// Split path into slash-separated parts, for example, path "/foo/bar"
 	// gives p==["foo", "bar"] and path "/" gives p==[""].
 	p := strings.Split(r.URL.Path, "/")[1:]

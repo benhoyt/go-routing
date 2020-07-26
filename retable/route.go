@@ -42,7 +42,7 @@ var routes = []route{
 	newRoute("POST", "/([^/]+)/image", widgetImage),
 }
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func Serve(w http.ResponseWriter, r *http.Request) {
 	var allow []string
 	for _, route := range routes {
 		matches := route.regex.FindStringSubmatch(r.URL.Path)

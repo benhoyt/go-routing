@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func Serve(w http.ResponseWriter, r *http.Request) {
 	// Pre-emptively return Not Found for URLs with trailing slash,
 	// as ShiftPath approach doesn't distinguish between no trailing
 	// slash and trailing slash
