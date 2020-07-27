@@ -47,6 +47,8 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 	h.ServeHTTP(w, r)
 }
 
+// match reports whether path matches ^regex$, and if it matches,
+// assigns any capture groups to the *string or *int vars.
 func match(path, pattern string, vars ...interface{}) bool {
 	regex := mustCompileCached(pattern)
 	matches := regex.FindStringSubmatch(path)
@@ -87,6 +89,9 @@ func mustCompileCached(pattern string) *regexp.Regexp {
 	return regex
 }
 
+// allowMethod takes a HandlerFunc and wraps it in a handler that only
+// responds if the request method is one of the given methods, otherwise
+// it responds with HTTP 405 Method Not Allowed.
 func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		for _, m := range methods {
@@ -100,10 +105,12 @@ func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
 	}
 }
 
+// get takes a HandlerFunc and wraps it to only allow the GET method
 func get(h http.HandlerFunc) http.HandlerFunc {
 	return allowMethod(h, http.MethodGet, http.MethodHead)
 }
 
+// post takes a HandlerFunc and wraps it to only allow the POST method
 func post(h http.HandlerFunc) http.HandlerFunc {
 	return allowMethod(h, http.MethodPost)
 }
