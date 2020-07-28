@@ -24,13 +24,13 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "":
-		get(home)(w, r)
+		serveHome(w, r)
 	case "api":
-		api(w, r)
+		serveApi(w, r)
 	case "contact":
-		get(contact)(w, r)
+		serveContact(w, r)
 	default:
-		widget{head}.root(w, r)
+		widget{head}.ServeHTTP(w, r)
 	}
 }
 
@@ -43,72 +43,72 @@ func shiftPath(p string) (head, tail string) {
 	return p[1:i], p[i:]
 }
 
-func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		for _, m := range methods {
-			if m == r.Method {
-				h(w, r)
-				return
-			}
-		}
-		w.Header().Set("Allow", strings.Join(methods, ", "))
+func allowMethod(w http.ResponseWriter, r *http.Request, method string) bool {
+	if method != r.Method {
+		w.Header().Set("Allow", method)
 		http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+		return false
 	}
+	return true
 }
 
-func get(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodGet, http.MethodHead)
-}
-
-func post(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodPost)
-}
-
-func home(w http.ResponseWriter, r *http.Request) {
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "GET") {
+		return
+	}
 	fmt.Fprint(w, "home\n")
 }
 
-func contact(w http.ResponseWriter, r *http.Request) {
+func serveContact(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	if head != "" {
 		http.NotFound(w, r)
 		return
 	}
+	if !allowMethod(w, r, "GET") {
+		return
+	}
 	fmt.Fprint(w, "contact\n")
 }
 
-func api(w http.ResponseWriter, r *http.Request) {
+func serveApi(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "widgets":
-		apiWidgets(w, r)
+		serveApiWidgets(w, r)
 	default:
 		http.NotFound(w, r)
 	}
 }
 
-func apiWidgets(w http.ResponseWriter, r *http.Request) {
+func serveApiWidgets(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "":
 		if r.Method == "GET" {
-			apiGetWidgets(w, r)
+			serveApiGetWidgets(w, r)
 		} else {
-			post(apiCreateWidget)(w, r)
+			serveApiCreateWidget(w, r)
 		}
 	default:
-		apiWidget{head}.root(w, r)
+		apiWidget{head}.ServeHTTP(w, r)
 	}
 }
 
-func apiGetWidgets(w http.ResponseWriter, r *http.Request) {
+func serveApiGetWidgets(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "GET") {
+		return
+	}
 	fmt.Fprint(w, "apiGetWidgets\n")
 }
 
-func apiCreateWidget(w http.ResponseWriter, r *http.Request) {
+func serveApiCreateWidget(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprint(w, "apiCreateWidget\n")
 }
 
@@ -116,40 +116,46 @@ type apiWidget struct {
 	slug string
 }
 
-func (h apiWidget) root(w http.ResponseWriter, r *http.Request) {
+func (h apiWidget) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "":
-		post(h.update)(w, r)
+		h.serveUpdate(w, r)
 	case "parts":
-		h.parts(w, r)
+		h.serveParts(w, r)
 	default:
 		http.NotFound(w, r)
 	}
 }
 
-func (h apiWidget) update(w http.ResponseWriter, r *http.Request) {
+func (h apiWidget) serveUpdate(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprintf(w, "apiUpdateWidget %s\n", h.slug)
 }
 
-func (h apiWidget) parts(w http.ResponseWriter, r *http.Request) {
+func (h apiWidget) serveParts(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "":
-		post(h.createPart)(w, r)
+		h.serveCreatePart(w, r)
 	default:
 		id, err := strconv.Atoi(head)
 		if err != nil || id <= 0 {
 			http.NotFound(w, r)
 			return
 		}
-		apiWidgetPart{h.slug, id}.root(w, r)
+		apiWidgetPart{h.slug, id}.ServeHTTP(w, r)
 	}
 }
 
-func (h apiWidget) createPart(w http.ResponseWriter, r *http.Request) {
+func (h apiWidget) serveCreatePart(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprintf(w, "apiCreateWidgetPart %s\n", h.slug)
 }
 
@@ -158,24 +164,30 @@ type apiWidgetPart struct {
 	id   int
 }
 
-func (h apiWidgetPart) root(w http.ResponseWriter, r *http.Request) {
+func (h apiWidgetPart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "update":
-		post(h.update)(w, r)
+		h.serveUpdate(w, r)
 	case "delete":
-		post(h.delete)(w, r)
+		h.serveDelete(w, r)
 	default:
 		http.NotFound(w, r)
 	}
 }
 
-func (h apiWidgetPart) update(w http.ResponseWriter, r *http.Request) {
+func (h apiWidgetPart) serveUpdate(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprintf(w, "apiUpdateWidgetPart %s %d\n", h.slug, h.id)
 }
 
-func (h apiWidgetPart) delete(w http.ResponseWriter, r *http.Request) {
+func (h apiWidgetPart) serveDelete(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprintf(w, "apiDeleteWidgetPart %s %d\n", h.slug, h.id)
 }
 
@@ -183,29 +195,38 @@ type widget struct {
 	slug string
 }
 
-func (h widget) root(w http.ResponseWriter, r *http.Request) {
+func (h widget) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
 	case "":
-		get(h.get)(w, r)
+		h.serveGet(w, r)
 	case "admin":
-		get(h.admin)(w, r)
+		h.serveAdmin(w, r)
 	case "image":
-		post(h.image)(w, r)
+		h.serveUpdateImage(w, r)
 	default:
 		http.NotFound(w, r)
 	}
 }
 
-func (h widget) get(w http.ResponseWriter, r *http.Request) {
+func (h widget) serveGet(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "GET") {
+		return
+	}
 	fmt.Fprintf(w, "widget %s\n", h.slug)
 }
 
-func (h widget) admin(w http.ResponseWriter, r *http.Request) {
+func (h widget) serveAdmin(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "GET") {
+		return
+	}
 	fmt.Fprintf(w, "widgetAdmin %s\n", h.slug)
 }
 
-func (h widget) image(w http.ResponseWriter, r *http.Request) {
+func (h widget) serveUpdateImage(w http.ResponseWriter, r *http.Request) {
+	if !allowMethod(w, r, "POST") {
+		return
+	}
 	fmt.Fprintf(w, "widgetImage %s\n", h.slug)
 }
