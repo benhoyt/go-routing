@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -90,29 +89,27 @@ func mustCompileCached(pattern string) *regexp.Regexp {
 }
 
 // allowMethod takes a HandlerFunc and wraps it in a handler that only
-// responds if the request method is one of the given methods, otherwise
-// it responds with HTTP 405 Method Not Allowed.
-func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
+// responds if the request method is the given method, otherwise it
+// responds with HTTP 405 Method Not Allowed.
+func allowMethod(h http.HandlerFunc, method string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		for _, m := range methods {
-			if m == r.Method {
-				h(w, r)
-				return
-			}
+		if method != r.Method {
+			w.Header().Set("Allow", method)
+			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+			return
 		}
-		w.Header().Set("Allow", strings.Join(methods, ", "))
-		http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+		h(w, r)
 	}
 }
 
 // get takes a HandlerFunc and wraps it to only allow the GET method
 func get(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodGet, http.MethodHead)
+	return allowMethod(h, "GET")
 }
 
 // post takes a HandlerFunc and wraps it to only allow the POST method
 func post(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodPost)
+	return allowMethod(h, "POST")
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

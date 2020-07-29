@@ -47,25 +47,23 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 	h.ServeHTTP(w, r)
 }
 
-func allowMethod(h http.HandlerFunc, methods ...string) http.HandlerFunc {
+func allowMethod(h http.HandlerFunc, method string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		for _, m := range methods {
-			if m == r.Method {
-				h(w, r)
-				return
-			}
+		if method != r.Method {
+			w.Header().Set("Allow", method)
+			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+			return
 		}
-		w.Header().Set("Allow", strings.Join(methods, ", "))
-		http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+		h(w, r)
 	}
 }
 
 func get(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodGet, http.MethodHead)
+	return allowMethod(h, "GET")
 }
 
 func post(h http.HandlerFunc) http.HandlerFunc {
-	return allowMethod(h, http.MethodPost)
+	return allowMethod(h, "POST")
 }
 
 func isId(s string, p *int) bool {
