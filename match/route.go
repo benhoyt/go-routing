@@ -45,6 +45,10 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 	h.ServeHTTP(w, r)
 }
 
+// match reports whether path matches the given pattern, which is a
+// path with '+' wildcards wherever you want to use a parameter. Path
+// parameters are assigned to the pointers in vars (len(vars) must be
+// the number of wildcards), which must be of type *string or *int.
 func match(path, pattern string, vars ...interface{}) bool {
 	for ; pattern != "" && path != ""; pattern = pattern[1:] {
 		switch pattern[0] {
@@ -61,7 +65,7 @@ func match(path, pattern string, vars ...interface{}) bool {
 				*p = segment
 			case *int:
 				n, err := strconv.Atoi(segment)
-				if err != nil {
+				if err != nil || n < 0 {
 					return false
 				}
 				*p = n
