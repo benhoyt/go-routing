@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-func Serve(w http.ResponseWriter, r *http.Request) {
+var Serve = noTrailingSlash(serve)
+
+func serve(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shiftPath(r.URL.Path)
 	switch head {
@@ -49,12 +51,12 @@ func ensureMethod(w http.ResponseWriter, r *http.Request, method string) bool {
 	return true
 }
 
-// NoTrailingSlash is a HandlerFunc wrapper (decorator) that return
+// noTrailingSlash is a HandlerFunc wrapper (decorator) that return
 // 404 Not Found for any URL with a trailing slash (except "/" itself).
 // This is needed for our URLs, as the ShiftPath approach doesn't
 // distinguish between no trailing slash and trailing slash, and I
 // can't find a simple way to make it do that.
-func NoTrailingSlash(h http.HandlerFunc) http.HandlerFunc {
+func noTrailingSlash(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" && strings.HasSuffix(r.URL.Path, "/") {
 			http.NotFound(w, r)

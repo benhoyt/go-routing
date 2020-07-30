@@ -56,7 +56,7 @@ var routers = map[string]http.Handler{
 	"pat":       pat.Serve,
 	"reswitch":  http.HandlerFunc(reswitch.Serve),
 	"retable":   http.HandlerFunc(retable.Serve),
-	"shiftpath": http.HandlerFunc(shiftpath.NoTrailingSlash(shiftpath.Serve)),
+	"shiftpath": http.HandlerFunc(shiftpath.Serve),
 	"split":     http.HandlerFunc(split.Serve),
 }
 
