@@ -113,9 +113,7 @@ func BenchmarkRouters(b *testing.B) {
 	for _, name := range names {
 		router := routers[name]
 		if router == nil {
-			router = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("noop\n"))
-			})
+			router = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 		}
 		b.Run(name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
