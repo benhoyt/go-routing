@@ -43,12 +43,14 @@ func TestRouters(t *testing.T) {
 		{"POST", "/api/widgets/foo/zarts", 404, ""},
 
 		{"POST", "/api/widgets/foo/parts/1/update", 200, "apiUpdateWidgetPart foo 1\n"},
+		{"POST", "/api/widgets/foo/parts/1/update/no", 404, ""},
 		{"POST", "/api/widgets/foo/parts/42/update", 200, "apiUpdateWidgetPart foo 42\n"},
 		{"POST", "/api/widgets/foo/parts/bar/update", 404, ""},
 		{"POST", "/api/widgets/bar-baz/parts/99/update", 200, "apiUpdateWidgetPart bar-baz 99\n"},
 		{"GET", "/api/widgets/foo/parts/1/update", 405, ""},
 
 		{"POST", "/api/widgets/foo/parts/1/delete", 200, "apiDeleteWidgetPart foo 1\n"},
+		{"POST", "/api/widgets/foo/parts/1/delete/no", 404, ""},
 		{"POST", "/api/widgets/foo/parts/42/delete", 200, "apiDeleteWidgetPart foo 42\n"},
 		{"POST", "/api/widgets/foo/parts/bar/delete", 404, ""},
 		{"POST", "/api/widgets/bar-baz/parts/99/delete", 200, "apiDeleteWidgetPart bar-baz 99\n"},
@@ -63,9 +65,11 @@ func TestRouters(t *testing.T) {
 		{"GET", "/foo/admin", 200, "widgetAdmin foo\n"},
 		{"GET", "/bar-baz/admin", 200, "widgetAdmin bar-baz\n"},
 		{"GET", "/foo/admin/", 404, ""},
+		{"GET", "/foo/admin/no", 404, ""},
 		{"POST", "/foo/admin", 405, ""},
 
 		{"POST", "/foo/image", 200, "widgetImage foo\n"},
+		{"POST", "/foo/image/no", 404, ""},
 		{"GET", "/foo/image", 405, ""},
 		{"POST", "/bar-baz/image", 200, "widgetImage bar-baz\n"},
 		{"POST", "/foo/image/", 404, ""},

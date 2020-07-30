@@ -192,6 +192,12 @@ func (h apiWidgetPart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h apiWidgetPart) serveUpdate(w http.ResponseWriter, r *http.Request) {
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+	if head != "" {
+		http.NotFound(w, r)
+		return
+	}
 	if !ensureMethod(w, r, "POST") {
 		return
 	}
@@ -199,6 +205,12 @@ func (h apiWidgetPart) serveUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h apiWidgetPart) serveDelete(w http.ResponseWriter, r *http.Request) {
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+	if head != "" {
+		http.NotFound(w, r)
+		return
+	}
 	if !ensureMethod(w, r, "POST") {
 		return
 	}
@@ -232,6 +244,12 @@ func (h widget) serveGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h widget) serveAdmin(w http.ResponseWriter, r *http.Request) {
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+	if head != "" {
+		http.NotFound(w, r)
+		return
+	}
 	if !ensureMethod(w, r, "GET") {
 		return
 	}
@@ -239,6 +257,12 @@ func (h widget) serveAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h widget) serveUpdateImage(w http.ResponseWriter, r *http.Request) {
+	var head string
+	head, r.URL.Path = shiftPath(r.URL.Path)
+	if head != "" {
+		http.NotFound(w, r)
+		return
+	}
 	if !ensureMethod(w, r, "POST") {
 		return
 	}
