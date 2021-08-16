@@ -3,6 +3,7 @@
 package match
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -28,19 +29,19 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 			h = post(apiCreateWidget)
 		}
 	case match(p, "/api/widgets/+", &apiWidget.slug):
-		h = post(apiWidget.update)
+		h = post(withURLParams(apiWidgetUpdate, apiWidget))
 	case match(p, "/api/widgets/+/parts", &apiWidget.slug):
-		h = post(apiWidget.createPart)
+		h = post(withURLParams(apiWidgetCreatePart, apiWidget))
 	case match(p, "/api/widgets/+/parts/+/update", &apiWidgetPart.slug, &apiWidgetPart.id):
-		h = post(apiWidgetPart.update)
+		h = post(withURLParams(apiWidgetPartUpdate, apiWidgetPart))
 	case match(p, "/api/widgets/+/parts/+/delete", &apiWidgetPart.slug, &apiWidgetPart.id):
-		h = post(apiWidgetPart.delete)
+		h = post(withURLParams(apiWidgetPartDelete, apiWidgetPart))
 	case match(p, "/+", &widget.slug):
-		h = get(widget.widget)
+		h = get(withURLParams(widgetWidget, widget))
 	case match(p, "/+/admin", &widget.slug):
-		h = get(widget.admin)
+		h = get(withURLParams(widgetAdmin, widget))
 	case match(p, "/+/image", &widget.slug):
-		h = post(widget.image)
+		h = post(withURLParams(widgetImage, widget))
 	default:
 		http.NotFound(w, r)
 		return
@@ -97,6 +98,19 @@ func allowMethod(h http.HandlerFunc, method string) http.HandlerFunc {
 	}
 }
 
+type ctxKey struct{}
+
+func withURLParams(h http.HandlerFunc, params interface{}) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), ctxKey{}, params)
+		h(w, r.WithContext(ctx))
+	}
+}
+
+func urlParams(r *http.Request) interface{} {
+	return r.Context().Value(ctxKey{})
+}
+
 func get(h http.HandlerFunc) http.HandlerFunc {
 	return allowMethod(h, "GET")
 }
@@ -125,12 +139,14 @@ type apiWidget struct {
 	slug string
 }
 
-func (h apiWidget) update(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "apiUpdateWidget %s\n", h.slug)
+func apiWidgetUpdate(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(apiWidget)
+	fmt.Fprintf(w, "apiUpdateWidget %s\n", params.slug)
 }
 
-func (h apiWidget) createPart(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "apiCreateWidgetPart %s\n", h.slug)
+func apiWidgetCreatePart(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(apiWidget)
+	fmt.Fprintf(w, "apiCreateWidgetPart %s\n", params.slug)
 }
 
 type apiWidgetPart struct {
@@ -138,26 +154,31 @@ type apiWidgetPart struct {
 	id   int
 }
 
-func (h apiWidgetPart) update(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "apiUpdateWidgetPart %s %d\n", h.slug, h.id)
+func apiWidgetPartUpdate(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(apiWidgetPart)
+	fmt.Fprintf(w, "apiUpdateWidgetPart %s %d\n", params.slug, params.id)
 }
 
-func (h apiWidgetPart) delete(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "apiDeleteWidgetPart %s %d\n", h.slug, h.id)
+func apiWidgetPartDelete(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(apiWidgetPart)
+	fmt.Fprintf(w, "apiDeleteWidgetPart %s %d\n", params.slug, params.id)
 }
 
 type widget struct {
 	slug string
 }
 
-func (h widget) widget(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "widget %s\n", h.slug)
+func widgetWidget(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(widget)
+	fmt.Fprintf(w, "widget %s\n", params.slug)
 }
 
-func (h widget) admin(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "widgetAdmin %s\n", h.slug)
+func widgetAdmin(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(widget)
+	fmt.Fprintf(w, "widgetAdmin %s\n", params.slug)
 }
 
-func (h widget) image(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "widgetImage %s\n", h.slug)
+func widgetImage(w http.ResponseWriter, r *http.Request) {
+	params := urlParams(r).(widget)
+	fmt.Fprintf(w, "widgetImage %s\n", params.slug)
 }
