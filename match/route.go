@@ -11,8 +11,9 @@ import (
 
 func Serve(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	var slug string
-	var id int
+	var apiWidget apiWidget
+	var apiWidgetPart apiWidgetPart
+	var widget widget
 
 	p := r.URL.Path
 	switch {
@@ -20,24 +21,26 @@ func Serve(w http.ResponseWriter, r *http.Request) {
 		h = get(home)
 	case match(p, "/contact"):
 		h = get(contact)
-	case match(p, "/api/widgets") && r.Method == "GET":
-		h = get(apiGetWidgets)
 	case match(p, "/api/widgets"):
-		h = post(apiCreateWidget)
-	case match(p, "/api/widgets/+", &slug):
-		h = post(apiWidget{slug}.update)
-	case match(p, "/api/widgets/+/parts", &slug):
-		h = post(apiWidget{slug}.createPart)
-	case match(p, "/api/widgets/+/parts/+/update", &slug, &id):
-		h = post(apiWidgetPart{slug, id}.update)
-	case match(p, "/api/widgets/+/parts/+/delete", &slug, &id):
-		h = post(apiWidgetPart{slug, id}.delete)
-	case match(p, "/+", &slug):
-		h = get(widget{slug}.widget)
-	case match(p, "/+/admin", &slug):
-		h = get(widget{slug}.admin)
-	case match(p, "/+/image", &slug):
-		h = post(widget{slug}.image)
+		if r.Method == "GET" {
+			h = get(apiGetWidgets)
+		} else {
+			h = post(apiCreateWidget)
+		}
+	case match(p, "/api/widgets/+", &apiWidget.slug):
+		h = post(apiWidget.update)
+	case match(p, "/api/widgets/+/parts", &apiWidget.slug):
+		h = post(apiWidget.createPart)
+	case match(p, "/api/widgets/+/parts/+/update", &apiWidgetPart.slug, &apiWidgetPart.id):
+		h = post(apiWidgetPart.update)
+	case match(p, "/api/widgets/+/parts/+/delete", &apiWidgetPart.slug, &apiWidgetPart.id):
+		h = post(apiWidgetPart.delete)
+	case match(p, "/+", &widget.slug):
+		h = get(widget.widget)
+	case match(p, "/+/admin", &widget.slug):
+		h = get(widget.admin)
+	case match(p, "/+/image", &widget.slug):
+		h = post(widget.image)
 	default:
 		http.NotFound(w, r)
 		return
