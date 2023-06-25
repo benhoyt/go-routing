@@ -89,7 +89,7 @@ func TestRouters(t *testing.T) {
 					}
 					router.ServeHTTP(recorder, request)
 					if recorder.Code != test.status {
-						t.Fatalf("expected status %d, got %d", test.status, recorder.Code)
+						t.Fatalf("expected status %d, got %d (%q)", test.status, recorder.Code, recorder.Body.String())
 					}
 					if test.status == 200 {
 						body := recorder.Body.String()

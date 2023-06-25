@@ -27,6 +27,7 @@ import (
 	"github.com/benhoyt/go-routing/chi"
 	"github.com/benhoyt/go-routing/gorilla"
 	"github.com/benhoyt/go-routing/match"
+	"github.com/benhoyt/go-routing/muxpatterns"
 	"github.com/benhoyt/go-routing/pat"
 	"github.com/benhoyt/go-routing/reswitch"
 	"github.com/benhoyt/go-routing/retable"
@@ -50,14 +51,15 @@ func main() {
 }
 
 var routers = map[string]http.Handler{
-	"chi":       chi.Serve,
-	"gorilla":   gorilla.Serve,
-	"match":     http.HandlerFunc(match.Serve),
-	"pat":       pat.Serve,
-	"reswitch":  http.HandlerFunc(reswitch.Serve),
-	"retable":   http.HandlerFunc(retable.Serve),
-	"shiftpath": http.HandlerFunc(shiftpath.Serve),
-	"split":     http.HandlerFunc(split.Serve),
+	"chi":         chi.Serve,
+	"gorilla":     gorilla.Serve,
+	"match":       http.HandlerFunc(match.Serve),
+	"muxpatterns": muxpatterns.Serve,
+	"pat":         pat.Serve,
+	"reswitch":    http.HandlerFunc(reswitch.Serve),
+	"retable":     http.HandlerFunc(retable.Serve),
+	"shiftpath":   http.HandlerFunc(shiftpath.Serve),
+	"split":       http.HandlerFunc(split.Serve),
 }
 
 var routerNames = func() []string {
