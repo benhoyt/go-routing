@@ -6,5 +6,5 @@ require (
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/gorilla/mux v1.7.4
-	github.com/jba/muxpatterns v0.2.0
+	github.com/jba/muxpatterns v0.0.0-20230718112453-42aff74f7665
 )

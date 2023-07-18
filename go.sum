@@ -5,8 +5,8 @@ github.com/go-chi/chi v4.1.2+incompatible/go.mod h1:eB3wogJHnLi3x/kFX2A+IbTBlXxm
 github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
 github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
-github.com/jba/muxpatterns v0.2.0 h1:Hh5KZaEeaQPMzedDr3XgZBpW2BhYohCB5vf0FgXTyG4=
-github.com/jba/muxpatterns v0.2.0/go.mod h1:77+op56At17SXLuQrR46FWJybINlMcj2E/KrDhS5JiY=
+github.com/jba/muxpatterns v0.0.0-20230718112453-42aff74f7665 h1:ZKXLO5DXBeTeJyN04eCsDLt4zDJ6V62Hih7URrVoqSU=
+github.com/jba/muxpatterns v0.0.0-20230718112453-42aff74f7665/go.mod h1:77+op56At17SXLuQrR46FWJybINlMcj2E/KrDhS5JiY=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=

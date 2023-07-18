@@ -26,7 +26,6 @@ func init() {
 	r.HandleFunc("GET /contact", contact)
 	r.HandleFunc("GET /api/widgets", apiGetWidgets)
 	r.HandleFunc("POST /api/widgets", apiCreateWidget)
-	// TODO: seems to have a bug where "POST /api/widgets/" matches and gives slug "/"
 	r.HandleFunc("POST /api/widgets/{slug}", apiUpdateWidget)
 	r.HandleFunc("POST /api/widgets/{slug}/parts", apiCreateWidgetPart)
 	r.HandleFunc("POST /api/widgets/{slug}/parts/{id}/update", apiUpdateWidgetPart)
