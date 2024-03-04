@@ -1,6 +1,6 @@
 module github.com/benhoyt/go-routing
 
-go 1.14
+go 1.22.0
 
 require (
 	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40

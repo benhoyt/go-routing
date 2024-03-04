@@ -32,6 +32,7 @@ import (
 	"github.com/benhoyt/go-routing/retable"
 	"github.com/benhoyt/go-routing/shiftpath"
 	"github.com/benhoyt/go-routing/split"
+	"github.com/benhoyt/go-routing/stdlib"
 )
 
 const port = 8080
@@ -58,11 +59,15 @@ var routers = map[string]http.Handler{
 	"retable":   http.HandlerFunc(retable.Serve),
 	"shiftpath": http.HandlerFunc(shiftpath.Serve),
 	"split":     http.HandlerFunc(split.Serve),
+	"stdlib":    stdlib.Serve, // nil if Go version <1.22
 }
 
 var routerNames = func() []string {
 	routerNames := []string{}
-	for k := range routers {
+	for k, v := range routers {
+		if v == nil {
+			continue
+		}
 		routerNames = append(routerNames, k)
 	}
 	sort.Strings(routerNames)
